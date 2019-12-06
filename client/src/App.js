@@ -35,6 +35,10 @@ class App extends Component {
               </form>
             </div>
           </nav>
+          <br />
+          <Route path="/" exact component={TodosList} />
+          <Route path="/edit/:id" component={EditTodo} />
+          <Route path="/create" component={CreateTodo} />
         </div>
       </Router>
     );
