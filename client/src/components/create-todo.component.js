@@ -17,6 +17,7 @@ export default class CreateTodo extends Component {
         this.onChangeTodoResponsible = this.onChangeTodoResponsible.bind(this);
         this.onChangeTodoPriority = this.onChangeTodoPriority.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.handleAlternate = this.handleAlternate.bind(this);
     }
     //On change form
     onChangeTodoDescription(e) {
@@ -64,7 +65,37 @@ export default class CreateTodo extends Component {
             todo_priority: '',
             todo_completed: false,
         })
+        this.props.history.push('/');
 
+    }
+    handleAlternate(e) {
+        e.preventDefault();
+
+        console.log(`Form submitted:`);
+        console.log(`Todo Description: ${this.state.todo_description}`);
+        console.log(`Todo Responsible: ${this.state.todo_responsible}`);
+        console.log(`Todo Priority: ${this.state.todo_priority}`);
+        const newTodo = {
+            todo_description: this.state.todo_description,
+            todo_responsible: this.state.todo_responsible,
+            todo_priority: this.state.todo_priority,
+            todo_completed: this.state.todo_completed
+        }
+        axios.post('http://localhost:4000/todos/add', newTodo)
+            .then(res => {
+                console.log(res.data)
+                this.setState({ msg: 'todo added successfully' });
+            })
+            .catch(error => {
+                console.log(error);
+                this.setState({ msg: 'todo add failed.' });
+            })
+        this.setState({
+            todo_description: '',
+            todo_responsible: '',
+            todo_priority: '',
+            todo_completed: false,
+        })
     }
     render() {
         const { msg } = this.state;
@@ -131,6 +162,7 @@ export default class CreateTodo extends Component {
                     </div>
                     <div className="form-group">
                         <input type="submit" value="Tạo công việc" className="btn btn-primary" />
+                        <button  type="button" class="btn btn-secondary" onClick={this.handleAlternate.bind(this)}>Tạo vào tiếp tục</button>
                     </div>
                 </form>
             </div>
