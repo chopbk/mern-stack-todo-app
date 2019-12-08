@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -31,7 +32,12 @@ app.use('/users', usersRouter);
 app.use(function (req, res, next) {
   next(createError(404));
 });
+mongoose.connect('mongodb://127.0.0.1:27017/todos', { useNewUrlParser: true, useUnifiedTopology: true });
+const connection = mongoose.connection;
 
+connection.once('open', function () {
+  console.log("MongoDB database connection established successfully");
+})
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
