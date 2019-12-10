@@ -8,10 +8,11 @@ const Todo = props => (
         <td className={props.todo.todo_completed ? 'completed' : ''}>{props.todo.todo_responsible}</td>
         <td className={props.todo.todo_completed ? 'completed' : ''}>{props.todo.todo_priority}</td>
         <td>
-            <Link to={"/edit/" + props.todo._id}>Edit</Link>
+            <Link to={"/edit/" + props.todo._id}>Chỉnh sửa</Link>
         </td>
     </tr>
 )
+
 export default class TodosList extends Component {
     constructor(props) {
         super(props);
@@ -34,14 +35,14 @@ export default class TodosList extends Component {
     render() {
         return (
             <div>
-                <h3>Todos List</h3>
+                <h3>Danh sách công việc</h3>
                 <table className="table table-striped" style={{ marginTop: 20 }} >
                     <thead>
                         <tr>
-                            <th>Description</th>
-                            <th>Responsible</th>
-                            <th>Priority</th>
-                            <th>Action</th>
+                            <th>Mô tả</th>
+                            <th>Chịu trách nhiệm</th>
+                            <th>Độ ưu tiên </th>
+                            <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
