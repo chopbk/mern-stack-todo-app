@@ -11,6 +11,7 @@ export default class EditTodo extends Component {
         this.onChangeTodoPriority = this.onChangeTodoPriority.bind(this);
         this.onChangeTodoCompleted = this.onChangeTodoCompleted.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.onClick = this.onClick.bind(this);
 
         this.state = {
             todo_description: '',
@@ -73,7 +74,13 @@ export default class EditTodo extends Component {
 
         this.props.history.push('/');
     }
+    onClick(e) {
+        e.preventDefault();
+        axios.delete('http://localhost:4000/todos/update/' + this.props.match.params.id)
+            .then(res => console.log(res.data));
 
+        this.props.history.push('/');
+    }
     render() {
         return (
             <div>
@@ -149,6 +156,9 @@ export default class EditTodo extends Component {
 
                     <div className="form-group">
                         <input type="submit" value="Thay đổi" className="btn btn-primary" />
+                    </div>
+                    <div>
+                        <button onClick={this.onClick} type="button" className="btn btn-primary"> Xóa </button>
                     </div>
                 </form>
             </div>
