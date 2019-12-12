@@ -37,8 +37,7 @@ todoRoutes.route('/update/:id').post(function (req, res) {
     Todo.findById(req.params.id, function (err, todo) {
         if (!todo)
             res.status(404).send("data is not found");
-        else
-            todo.todo_description = req.body.todo_description;
+        todo.todo_description = req.body.todo_description;
         todo.todo_responsible = req.body.todo_responsible;
         todo.todo_priority = req.body.todo_priority;
         todo.todo_completed = req.body.todo_completed;
@@ -51,4 +50,22 @@ todoRoutes.route('/update/:id').post(function (req, res) {
             });
     });
 });
+todoRoutes.route('/update/:id').delete(function (req, res) {
+    Todo.deleteOne({ _id: req.params.id }, function (err, todo) {
+        if (err) {
+            throw err;
+        }
+        else {
+            console.log(todo);
+            if (todo.deletedCount !== 0) {
+                console.log("1 document deleted");
+                return res.json('1 document deleted');
+            }
+            return res.status(404).send("data is not found");
+        }
+
+    });
+});
+
+
 module.exports = todoRoutes;
