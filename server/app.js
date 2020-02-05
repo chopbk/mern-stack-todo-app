@@ -3,13 +3,13 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+const config = require("./config/config")
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var usersRouter = require('./routes/user.router');
 var todosRouter = require('./routes/todo.router');
 
 var app = express();
@@ -34,7 +34,8 @@ app.use('/todos', todosRouter);
 app.use(function (req, res, next) {
   next(createError(404));
 });
-mongoose.connect('mongodb://127.0.0.1:27017/todos', { useNewUrlParser: true, useUnifiedTopology: true });
+
+mongoose.connect(config.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 const connection = mongoose.connection;
 
 connection.once('open', function () {
