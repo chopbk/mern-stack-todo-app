@@ -3,7 +3,7 @@ var express = require('express');
 //use express
 const todoRoutes = express.Router();
 const Todo = require('../models/todo.model');
-
+const validateTodoInput = require("../validation/todo");
 // handle incoming HTTP GET request on the /todos/ URL path.
 todoRoutes.route('/').get(function (req, res) {
     Todo.find(function (err, todos) {
@@ -23,6 +23,10 @@ todoRoutes.route('/:id').get(function (req, res) {
 });
 // add new todo items by sending a HTTP post request 
 todoRoutes.route('/add').post(function (req, res) {
+    const { errors, isValid } = validateTodoInput(req.body);
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
     let todo = new Todo(req.body);
     todo.save()
         .then(todo => {
@@ -34,6 +38,10 @@ todoRoutes.route('/add').post(function (req, res) {
 });
 // update an existing todo item
 todoRoutes.route('/update/:id').post(function (req, res) {
+    const { errors, isValid } = validateTodoInput(req.body);
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
     Todo.findById(req.params.id, function (err, todo) {
         if (!todo)
             res.status(404).send("data is not found");
