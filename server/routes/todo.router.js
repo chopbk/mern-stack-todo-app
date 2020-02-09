@@ -77,9 +77,10 @@ todoRoutes.route('/update/:id').post(async function (req, res) {
 
 
 });
-todoRoutes.route('/update/:id').delete(function (req, res) {
+todoRoutes.route('/update/:id').delete(async function (req, res) {
     try {
-        let todo = Todo.deleteOne({ _id: req.params.id });
+        let todo = await Todo.deleteOne({ _id: req.params.id });
+        console.log(todo.deletedCount);
         if (todo.deletedCount !== 0) {
             return res.json('1 document deleted');
         }
@@ -88,6 +89,7 @@ todoRoutes.route('/update/:id').delete(function (req, res) {
         res.status(400).json(error.message);
     }
 });
+
 
 
 module.exports = todoRoutes;
