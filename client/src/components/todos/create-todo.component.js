@@ -1,41 +1,25 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
-export default class EditTodo extends Component {
-
+export default class CreateTodo extends Component {
     constructor(props) {
         super(props);
-
-        this.onChangeTodoDescription = this.onChangeTodoDescription.bind(this);
-        this.onChangeTodoResponsible = this.onChangeTodoResponsible.bind(this);
-        this.onChangeTodoPriority = this.onChangeTodoPriority.bind(this);
-        this.onChangeTodoCompleted = this.onChangeTodoCompleted.bind(this);
-        this.onSubmit = this.onSubmit.bind(this);
-        this.onClick = this.onClick.bind(this);
 
         this.state = {
             todo_description: '',
             todo_responsible: '',
             todo_priority: '',
-            todo_completed: false
+            todo_completed: false,
+            msg: ''
         }
+        // make sure to bind those methods to this 
+        this.onChangeTodoDescription = this.onChangeTodoDescription.bind(this);
+        this.onChangeTodoResponsible = this.onChangeTodoResponsible.bind(this);
+        this.onChangeTodoPriority = this.onChangeTodoPriority.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
+        this.handleAlternate = this.handleAlternate.bind(this);
     }
-
-    componentDidMount() {
-        axios.get('http://localhost:4000/todos/' + this.props.match.params.id)
-            .then(response => {
-                this.setState({
-                    todo_description: response.data.todo_description,
-                    todo_responsible: response.data.todo_responsible,
-                    todo_priority: response.data.todo_priority,
-                    todo_completed: response.data.todo_completed
-                })
-            })
-            .catch(function (error) {
-                console.log(error);
-            })
-    }
-
+    //On change form
     onChangeTodoDescription(e) {
         this.setState({
             todo_description: e.target.value
@@ -53,39 +37,77 @@ export default class EditTodo extends Component {
             todo_priority: e.target.value
         });
     }
-
-    onChangeTodoCompleted(e) {
-        this.setState({
-            todo_completed: !this.state.todo_completed
-        });
-    }
-
     onSubmit(e) {
         e.preventDefault();
-        const obj = {
+
+        console.log(`Form submitted:`);
+        console.log(`Todo Description: ${this.state.todo_description}`);
+        console.log(`Todo Responsible: ${this.state.todo_responsible}`);
+        console.log(`Todo Priority: ${this.state.todo_priority}`);
+        const newTodo = {
             todo_description: this.state.todo_description,
             todo_responsible: this.state.todo_responsible,
             todo_priority: this.state.todo_priority,
             todo_completed: this.state.todo_completed
-        };
-        console.log(obj);
-        axios.post('http://localhost:4000/todos/update/' + this.props.match.params.id, obj)
-            .then(res => console.log(res.data));
-
+        }
+        axios.post('/todos/add', newTodo)
+            .then(res => {
+                console.log(res.data)
+                this.setState({ msg: 'todo added successfully' });
+            })
+            .catch(error => {
+                console.log(error);
+                this.setState({ msg: 'todo add failed.' });
+            })
+        this.setState({
+            todo_description: '',
+            todo_responsible: '',
+            todo_priority: '',
+            todo_completed: false,
+        })
         this.props.history.push('/');
+
     }
-    onClick(e) {
+    handleAlternate(e) {
         e.preventDefault();
-        axios.delete('http://localhost:4000/todos/update/' + this.props.match.params.id)
-            .then(res => console.log(res.data));
 
-        this.props.history.push('/');
+        console.log(`Form submitted:`);
+        console.log(`Todo Description: ${this.state.todo_description}`);
+        console.log(`Todo Responsible: ${this.state.todo_responsible}`);
+        console.log(`Todo Priority: ${this.state.todo_priority}`);
+        const newTodo = {
+            todo_description: this.state.todo_description,
+            todo_responsible: this.state.todo_responsible,
+            todo_priority: this.state.todo_priority,
+            todo_completed: this.state.todo_completed
+        }
+        axios.post('/todos/add', newTodo)
+            .then(res => {
+                console.log(res.data)
+                this.setState({ msg: 'todo added successfully' });
+            })
+            .catch(error => {
+                console.log(error);
+                this.setState({ msg: 'todo add failed.' });
+            })
+        this.setState({
+            todo_description: '',
+            todo_responsible: '',
+            todo_priority: '',
+            todo_completed: false,
+        })
     }
     render() {
+        const { msg } = this.state;
         return (
-            <div>
-                <h3 align="center">Thay đổi thông tin</h3>
+            <div style={{ marginTop: 10 }}>
+                <h3>Tạo công việc mới</h3>
                 <form onSubmit={this.onSubmit}>
+                    {msg !== '' &&
+                        <div class="alert alert-warning alert-dismissible" role="alert">
+                            {msg}
+                        </div>
+                    }
                     <div className="form-group">
                         <label>Mô tả: </label>
                         <input type="text"
@@ -95,7 +117,7 @@ export default class EditTodo extends Component {
                         />
                     </div>
                     <div className="form-group">
-                        <label>Chịu trách nhiệm: </label>
+                        <label>Nguời chịu trách nhiệm: </label>
                         <input
                             type="text"
                             className="form-control"
@@ -113,7 +135,7 @@ export default class EditTodo extends Component {
                                 checked={this.state.todo_priority === 'Low'}
                                 onChange={this.onChangeTodoPriority}
                             />
-                            <label className="form-check-label">Thấp</label>
+                            <label className="form-check-label">Low</label>
                         </div>
                         <div className="form-check form-check-inline">
                             <input className="form-check-input"
@@ -124,7 +146,7 @@ export default class EditTodo extends Component {
                                 checked={this.state.todo_priority === 'Medium'}
                                 onChange={this.onChangeTodoPriority}
                             />
-                            <label className="form-check-label">Trung Bình</label>
+                            <label className="form-check-label">Medium</label>
                         </div>
                         <div className="form-check form-check-inline">
                             <input className="form-check-input"
@@ -135,30 +157,12 @@ export default class EditTodo extends Component {
                                 checked={this.state.todo_priority === 'High'}
                                 onChange={this.onChangeTodoPriority}
                             />
-                            <label className="form-check-label">Cao</label>
+                            <label className="form-check-label">High</label>
                         </div>
                     </div>
-                    <div className="form-check">
-                        <input className="form-check-input"
-                            id="completedCheckbox"
-                            type="checkbox"
-                            name="completedCheckbox"
-                            onChange={this.onChangeTodoCompleted}
-                            checked={this.state.todo_completed}
-                            value={this.state.todo_completed}
-                        />
-                        <label className="form-check-label" htmlFor="completedCheckbox">
-                            Hoàn thành
-                        </label>
-                    </div>
-
-                    <br />
-
                     <div className="form-group">
-                        <input type="submit" value="Thay đổi" className="btn btn-primary" />
-                    </div>
-                    <div>
-                        <button onClick={this.onClick} type="button" className="btn btn-primary"> Xóa </button>
+                        <input type="submit" value="Tạo công việc" className="btn btn-primary" />
+                        <button type="button" class="btn btn-secondary" onClick={this.handleAlternate.bind(this)}>Tạo vào tiếp tục</button>
                     </div>
                 </form>
             </div>

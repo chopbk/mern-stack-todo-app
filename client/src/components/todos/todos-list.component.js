@@ -8,7 +8,7 @@ const Todo = props => (
         <td className={props.todo.todo_completed ? 'completed' : ''}>{props.todo.todo_responsible}</td>
         <td className={props.todo.todo_completed ? 'completed' : ''}>{props.todo.todo_priority}</td>
         <td>
-            <Link to={"/edit/" + props.todo._id}>Chỉnh sửa</Link>
+            <Link to={"/todos/edit/" + props.todo._id}>Chỉnh sửa</Link>
         </td>
     </tr>
 )
@@ -19,7 +19,7 @@ export default class TodosList extends Component {
         this.state = { todos: [] };
     }
     componentDidMount() {
-        axios.get('http://localhost:4000/todos/')
+        axios.get('/todos/')
             .then(response => {
                 this.setState({ todos: response.data });
             })
