@@ -35,7 +35,10 @@ router.post("/register", (req, res) => {
       //Hash password before saving in database
       newUser
         .save()
-        .then(user => res.json(user))
+        .then(user => res.json({
+          success: true,
+          user: user
+        }))
         .catch(err => console.log(err));
     }
   });

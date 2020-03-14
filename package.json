@@ -24,5 +24,8 @@
   "homepage": "https://github.com/chopbk/mern-stack-todo-app#readme",
   "dependencies": {
     "concurrently": "^5.1.0"
+  },
+  "devDependencies": {
+    "kill-port": "^1.6.0"
   }
 }

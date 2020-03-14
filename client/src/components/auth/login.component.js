@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { loginUser } from "../../redux/actions/auth.actions";
 class Login extends Component {
     constructor() {
         super();
@@ -7,6 +10,13 @@ class Login extends Component {
             email: "",
             password: "",
             errors: {}
+        }
+    }
+    static getDerivedStateFromProps(props, state) {
+        if (props.errors) {
+            return {
+                errors: props.errors
+            };
         }
     }
     onChange = e => {
@@ -19,9 +29,15 @@ class Login extends Component {
             password: this.state.password
         };
         console.log(userData);
+        this.props.loginUser(userData);
+        // since we handle the redirect within our component, 
+        // we don't need to pass in this.props.history as a parameter
     };
     render() {
         const { errors } = this.state;
+        if (this.props.auth.isAuthenticated) {
+            this.props.history.push("/dashboard"); // push user to dashboard when they login
+        }
         return (
             <div className="container">
                 <br />
@@ -41,9 +57,6 @@ class Login extends Component {
                                     {errors.email}
                                 </div>}
                             </div>
-                            <small className="invalid-feedback">
-                                {errors.email}
-                            </small>
                             <div className="form-group">
                                 <label htmlFor="exampleInputPassword1">Mật khẩu</label>
                                 <input type="password"
@@ -77,4 +90,16 @@ class Login extends Component {
     }
 
 }
-export default Login;
+Login.propTypes = {
+    loginUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+    errors: PropTypes.object.isRequired
+};
+const mapStateToProps = state => ({
+    auth: state.auth,
+    errors: state.errors
+});
+export default connect(
+    mapStateToProps,
+    { loginUser }
+)(Login);
