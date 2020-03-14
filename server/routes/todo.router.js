@@ -1,95 +1,77 @@
 var express = require('express');
 
 //use express
-const todoRoutes = express.Router();
+const todoRouter = express.Router();
 const Todo = require('../models/todo.model');
-const User = require('../models/user.model');
-const validateTodoInput = require("../validation/todo");
+const validateTodoInput = require("../services/validation/todo-validation");
+const TodoServices = require("../services/todo.services");
+const { ResSuccess, ResErr } = require("../common/response-request");
 // handle incoming HTTP GET request on the /todos/ URL path.
-todoRoutes.route('/').get(async function (req, res) {
+todoRouter.route('/').get(async function (req, res) {
     try {
-        let todos = await Todo.find();
-        if (!todos)
-            throw new Error("Todo not found");
-        res.json(todos);
+        let todos = await TodoServices.findAllTodos();
+        return ResSuccess(res, todos.map(todo => todo.toWeb()), 200);
     } catch (error) {
-        console.log(err);
-    }
-});
-// retrieve a todo item by providing an ID
-todoRoutes.route('/:id').get(async function (req, res) {
-    let id = req.params.id;
-    try {
-        let todo = await Todo.findById(id)
-        if (!todo) {
-            throw new Error("Todo not found")
-        }
-        res.json(todo);
-    } catch (error) {
-        res.status(400).json(error.message);
+        console.log(error);
+        return ResErr(res, error.message, 404);
     }
 });
 // add new todo items by sending a HTTP post request 
-todoRoutes.route('/add').post(async function (req, res) {
-    const { errors, isValid } = validateTodoInput(req.body);
-    if (!isValid) {
-        return res.status(400).json(errors);
-    }
-    // Find user before add todo
-    try {
-        let user = await User.findOne({ email: req.body.todo_responsible });
-        if (!user) {
-            throw new Error('user does not exist');
+todoRouter.route('/add').post(validateTodoMiddleware,
+    async function (req, res) {
+        // Find user before add todo
+        try {
+            let todo = await TodoServices.addNewTodo(req.body);
+            return ResSuccess(res, todo, 200);
+        } catch (error) {
+            return ResErr(res, error.message, 404);
         }
-        let todo = new Todo(req.body);
-        const todoDb = await todo.save();
-        if (!todoDb)
-            throw new Error('adding new todo failed');
-        res.status(200).json({ 'todo': `todo added successfully with id: ${todoDb.id}` });
-    } catch (err) {
-        res.status(400).json(error.message);
+    });
+// insert a todo item by providing an ID to req
+todoRouter.use('/:id/', async function (req, res, next) {
+    let id = req.params.id;
+    try {
+        let todo = await TodoServices.findTodoByID(id);
+        if (todo)
+            req.todo = todo;
+        next();
+    } catch (error) {
+        return ResErr(res, error.message, 404);
+    }
+})
+// retrieve a todo item by providing an ID
+todoRouter.route('/:id').get(async function (req, res) {
+    try {
+        return ResSuccess(res, req.todo.toWeb(), 200);
+    } catch (error) {
+        return ResErr(res, error.message, 404);
     }
 });
 // update an existing todo item
-todoRoutes.route('/update/:id').post(async function (req, res) {
-    const { errors, isValid } = validateTodoInput(req.body);
+todoRouter.route('/:id/').put(validateTodoMiddleware, async function (req, res) {
+    try {
+        let todo = await TodoServices.updateTodo(req.todo, req.body);
+        return ResSuccess(res, todo, 200);
+    } catch (error) {
+        return ResErr(res, error.message, 404);
+    }
+});
+todoRouter.route('/:id//').delete(async function (req, res) {
+    try {
+        await TodoServices.deleteTodo(req.todo);
+        return ResSuccess(res, {}, 200);
+    } catch (error) {
+        return ResErr(res, error.message, 404);
+    }
+});
+
+
+// middleware function check todo input
+async function validateTodoMiddleware(req, res, next) {
+    const { errors, isValid } = await validateTodoInput(req.body);
     if (!isValid) {
-        return res.status(400).json(errors);
+        return ResErr(res, errors.message, 404);
     }
-    try {
-        let todo = await Todo.findById(req.params.id)
-        if (!todo)
-            res.status(404).send("todo is not found");
-        todo.todo_description = req.body.todo_description;
-        let user = await User.findOne({ email: req.body.todo_responsible });
-        if (!user) {
-            throw new Error('user does not exist');
-        }
-        todo.todo_responsible = req.body.todo_responsible;
-        todo.todo_priority = req.body.todo_priority;
-        todo.todo_completed = req.body.todo_completed;
-        await todo.save();
-        if (!todo) throw new Error('Update not possible');
-        res.json('Todo updated!');
-    } catch (error) {
-        res.status(400).json(error.message);
-    }
-
-
-});
-todoRoutes.route('/update/:id').delete(async function (req, res) {
-    try {
-        let todo = await Todo.deleteOne({ _id: req.params.id });
-        console.log(todo.deletedCount);
-        if (todo.deletedCount !== 0) {
-            return res.json('1 document deleted');
-        }
-        throw new Error("data is not found");
-    } catch (error) {
-        res.status(400).json(error.message);
-    }
-});
-
-
-
-module.exports = todoRoutes;
+    next();
+}
+module.exports = todoRouter;
