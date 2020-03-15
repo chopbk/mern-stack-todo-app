@@ -17,7 +17,7 @@ const findUserByEmail = async (email) => {
         }
         return user;
     } catch (error) {
-        logger.debug("findUserByEmail: " + error.message);
+        logger.error("findUserByEmail: " + error.message);
         throw new Error("Email does not exist");
     }
 }
@@ -32,7 +32,7 @@ const userLogin = async (user, password) => {
         }
         return user.getJwt();
     } catch (error) {
-        logger.debug("userLogin: " + error.message);
+        logger.error("userLogin: " + error.message);
         throw new Error("Password is incorrect");
     }
 }
@@ -41,7 +41,6 @@ const userLogin = async (user, password) => {
  */
 const userRegister = async (data) => {
     try {
-
         const newUser = new User({
             name: data.name,
             email: data.email,
@@ -50,12 +49,78 @@ const userRegister = async (data) => {
         await newUser.save()
         return newUser.toWeb();
     } catch (error) {
-        logger.debug("userRegister: " + error.message);
+        logger.error("userRegister: " + error.message);
         throw new Error("Register failure");
+    }
+}
+/**
+ * @des find all user services
+ */
+const findAllUser = async () => {
+    try {
+        let users = await User.find({});
+        // if (!Array.isArray(users) || !users.length)
+        // throw new Error("No user found");
+        return users;
+    } catch (error) {
+        logger.error("findAllUser: " + error.message);
+        throw new Error("No user found");
+    }
+}
+/**
+ * @des update user services 
+ */
+const findUserByID = async (userID) => {
+    try {
+        let user = await User.findById(userID)
+        if (!user) {
+            throw new Error("User not found");
+        }
+        return user;
+    } catch (error) {
+        logger.debug("findUserByID: " + error.message);
+        throw new Error("User not found");
+    }
+}
+/**
+ * @des update User to DB
+ */
+const updateUser = async (user, data) => {
+    try {
+        if (data.name)
+            user.name = data.name;
+        if (data.password)
+            user.password = data.password;
+        await user.save();
+        if (!user) throw new Error('Update not possible');
+        //console.log(user);
+        return user;
+    } catch (error) {
+        logger.debug("updateUser: " + error.message);
+        throw new Error('Update user not possible');
+    }
+}
+/**
+ * @des delete user in DB
+ */
+const deleteUser = async (user) => {
+    try {
+        await user.remove();
+        let checkUser = await User.findById(user._id)
+        if (checkUser)
+            throw new Error('Delete user not possible');
+        return;
+    } catch (error) {
+        logger.debug("deleteUser: " + error.message);
+        throw new Error('Delete user not possible');
     }
 }
 module.exports = {
     findUserByEmail,
     userLogin,
-    userRegister
+    userRegister,
+    findAllUser,
+    findUserByID,
+    updateUser,
+    deleteUser
 }

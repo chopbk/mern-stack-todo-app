@@ -33,13 +33,10 @@ const findTodoByID = async (todoID) => {
 /**
  * @des Find todos in DB by user
  */
-const findTodoByUser = async (user) => {
+const findAllTodoByUser = async (user) => {
     try {
-        let todo = await Todo.findById(todoID)
-        if (!todo) {
-            throw new Error("Todo not found")
-        }
-        return todo;
+        let todos = await Todo.find({ todo_responsible: user.email });
+        return todos;
     } catch (error) {
         logger.debug("findTodoByUser: " + error.message);
         throw new Error("Todo not found")
@@ -98,5 +95,6 @@ module.exports = {
     findTodoByID,
     addNewTodo,
     updateTodo,
-    deleteTodo
+    deleteTodo,
+    findAllTodoByUser
 }

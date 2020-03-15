@@ -27,6 +27,5 @@ Todo.methods.toWeb = function () {
         todo_priority: todo.todo_priority,
         todo_completed: todo.todo_completed
     }
-
 };
 module.exports = mongoose.model('Todo', Todo);

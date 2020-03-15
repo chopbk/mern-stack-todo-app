@@ -56,7 +56,8 @@ todoRouter.route('/:id/').put(validateTodoMiddleware, async function (req, res) 
         return ResErr(res, error.message, 404);
     }
 });
-todoRouter.route('/:id//').delete(async function (req, res) {
+// delete an existing user item
+todoRouter.route('/:id/').delete(async function (req, res) {
     try {
         await TodoServices.deleteTodo(req.todo);
         return ResSuccess(res, {}, 200);
