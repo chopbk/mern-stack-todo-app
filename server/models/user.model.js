@@ -1,6 +1,8 @@
 const mongoose = require('mongoose'),
     bcrypt = require('bcrypt'),
     SALT_WORK_FACTOR = 10;
+const jwt = require("jsonwebtoken");
+const config = require("../config")[process.env.NODE_ENV || 'dev']
 const Schema = mongoose.Schema;
 //Create Schema
 const UserSchema = new Schema({
@@ -37,5 +39,28 @@ UserSchema.methods.comparePassword = async function (candidatePassword) {
     user = this;
     return await bcrypt.compare(candidatePassword, user.password);;
 
+};
+UserSchema.methods.getJwt = () => {
+    user = this;
+    let payload = {
+        id: user.id,
+        name: user.name
+    };
+    const token = jwt.sign(
+        payload,
+        config.secretOrKey,
+        {
+            expiresIn: 31556926 // 1 year in seconds
+        }
+    );
+    return { token: "Bearer " + token };
+}
+UserSchema.methods.toWeb = function () {
+    user = this;
+    return {
+        _id: user._id,
+        name: user.name,
+        email: user.email
+    }
 };
 module.exports = User = mongoose.model("users", UserSchema);
