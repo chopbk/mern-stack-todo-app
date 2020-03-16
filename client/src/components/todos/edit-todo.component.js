@@ -69,14 +69,14 @@ export default class EditTodo extends Component {
             todo_completed: this.state.todo_completed
         };
         console.log(obj);
-        axios.post('/todos/update/' + this.props.match.params.id, obj)
+        axios.put('/todos/' + this.props.match.params.id, obj)
             .then(res => console.log(res.data));
 
         this.props.history.push('/todos');
     }
     onClick(e) {
         e.preventDefault();
-        axios.delete('/todos/update/' + this.props.match.params.id)
+        axios.delete('/todos/' + this.props.match.params.id + + this.props.match.params.id)
             .then(res => console.log(res.data));
 
         this.props.history.push('/todos');
@@ -108,9 +108,9 @@ export default class EditTodo extends Component {
                             <input className="form-check-input"
                                 type="radio"
                                 name="priorityOptions"
-                                id="priorityLow"
-                                value="Low"
-                                checked={this.state.todo_priority === 'Low'}
+                                id="prioritylow"
+                                value="low"
+                                checked={this.state.todo_priority === 'low'}
                                 onChange={this.onChangeTodoPriority}
                             />
                             <label className="form-check-label">Thấp</label>
@@ -119,9 +119,9 @@ export default class EditTodo extends Component {
                             <input className="form-check-input"
                                 type="radio"
                                 name="priorityOptions"
-                                id="priorityMedium"
-                                value="Medium"
-                                checked={this.state.todo_priority === 'Medium'}
+                                id="prioritymedium"
+                                value="medium"
+                                checked={this.state.todo_priority === 'medium'}
                                 onChange={this.onChangeTodoPriority}
                             />
                             <label className="form-check-label">Trung Bình</label>
@@ -130,9 +130,9 @@ export default class EditTodo extends Component {
                             <input className="form-check-input"
                                 type="radio"
                                 name="priorityOptions"
-                                id="priorityHigh"
-                                value="High"
-                                checked={this.state.todo_priority === 'High'}
+                                id="priorityhigh"
+                                value="high"
+                                checked={this.state.todo_priority === 'high'}
                                 onChange={this.onChangeTodoPriority}
                             />
                             <label className="form-check-label">Cao</label>

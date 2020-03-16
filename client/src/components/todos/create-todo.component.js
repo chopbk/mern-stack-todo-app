@@ -65,7 +65,7 @@ export default class CreateTodo extends Component {
             todo_priority: '',
             todo_completed: false,
         })
-        this.props.history.push('/');
+        //this.props.history.push('/');
 
     }
     handleAlternate(e) {
@@ -104,7 +104,7 @@ export default class CreateTodo extends Component {
                 <h3>Tạo công việc mới</h3>
                 <form onSubmit={this.onSubmit}>
                     {msg !== '' &&
-                        <div class="alert alert-warning alert-dismissible" role="alert">
+                        <div className="alert alert-warning alert-dismissible" role="alert">
                             {msg}
                         </div>
                     }
@@ -130,39 +130,38 @@ export default class CreateTodo extends Component {
                             <input className="form-check-input"
                                 type="radio"
                                 name="priorityOptions"
-                                id="priorityLow"
-                                value="Low"
-                                checked={this.state.todo_priority === 'Low'}
+                                id="prioritylow"
+                                value="low"
+                                checked={this.state.todo_priority === 'low'}
                                 onChange={this.onChangeTodoPriority}
                             />
-                            <label className="form-check-label">Low</label>
+                            <label className="form-check-label">low</label>
                         </div>
                         <div className="form-check form-check-inline">
                             <input className="form-check-input"
                                 type="radio"
                                 name="priorityOptions"
-                                id="priorityMedium"
-                                value="Medium"
-                                checked={this.state.todo_priority === 'Medium'}
+                                id="prioritymedium"
+                                value="medium"
+                                checked={this.state.todo_priority === 'medium'}
                                 onChange={this.onChangeTodoPriority}
                             />
-                            <label className="form-check-label">Medium</label>
+                            <label className="form-check-label">medium</label>
                         </div>
                         <div className="form-check form-check-inline">
                             <input className="form-check-input"
                                 type="radio"
                                 name="priorityOptions"
-                                id="priorityHigh"
-                                value="High"
-                                checked={this.state.todo_priority === 'High'}
+                                id="priorityhigh"
+                                value="high"
+                                checked={this.state.todo_priority === 'high'}
                                 onChange={this.onChangeTodoPriority}
                             />
-                            <label className="form-check-label">High</label>
+                            <label className="form-check-label">high</label>
                         </div>
                     </div>
                     <div className="form-group">
                         <input type="submit" value="Tạo công việc" className="btn btn-primary" />
-                        <button type="button" class="btn btn-secondary" onClick={this.handleAlternate.bind(this)}>Tạo vào tiếp tục</button>
                     </div>
                 </form>
             </div>
